@@ -1,0 +1,927 @@
+%% !TeX encoding = UTF-8
+%% !TeX program = pdflatex
+%% !BIB program = bibtex
+\documentclass[onecolumn,a4paper]{article}
+%%% To write an article in English, please use the option ``english'' in order
+%%% to get the correct hyphenation patterns and terms.
+% \documentclass[english]{class}
+%%
+\usepackage{amsmath}
+\usepackage{amsfonts} 
+% \usepackage{titling}
+\usepackage{graphicx}
+\usepackage{indentfirst}
+\usepackage{xfrac}
+\begin{document}
+\title{Soft and Biohybrid Robotics Summary}
+%%%\subtitle{Untertitel / Subtitle} % if needed
+\author{Matthias Heyrman}
+\date{Spring 2023}
+% {Matthias Heyrman}
+% \footnote{ETHZ, \email{mcaro.heyrman@student.ethz.ch}}
+% \startpage{1} % Start page
+% \booktitle{Soft and Biohybrid Robots} % Name of book title
+% \year{2023}
+%%%\lnidoi{18.18420/provided-by-editor-02} % if known
+\maketitle
+
+% \begin{abstract}
+% \end{abstract}
+% \begin{keywords}
+% Schlagwort1 \and Schlagwort2 %Keyword1 \and Keyword2
+% \end{keywords}
+\section{Introduction and Overview}
+Soft robotics is an emerging field using non-traditional compliant / soft materials to drive robots. These robots utilize \textbf{compliance} that is shunned in traditional robotics and typical engineering at the core of their functionality.
+
+A commonly thought-of soft robot looks like an elephant trunk, a soft structure with no rigid components, driven purely by soft tissue.
+% \begin{center}\fbox{\begin{minipage}{30em}
+There exist various unsolved challenges for elephant-like continuum robotic arms:
+\begin{itemize}
+    \item Dexterous picking
+    \item Dynamic placement
+    \item Controlled tracing in 3D
+    \item Controlling the many controllable muscles of a real trunk and a robotic analogue's many actuators
+    \item Scalability and minituarization
+    \item Integrated sensing
+\end{itemize}
+
+Soft robotics are quickly becoming a research focus area for future robotic applications. There are still well known \textbf{Advantages and Disadvantages between Soft and Classical Robotics}:
+\begin{itemize}
+    \item Advantages:
+    \begin{itemize}
+        \item Can achieve more complex motion
+        \item Can absorb impacts to avoid damage
+        \item Compatible for human interaction
+        \item Elastically deformable and soft
+        \item Adjustable compliance
+        \item Adapatable shape
+        \item Multifunctional
+        \item Low cost materials sometimes
+        \item Potentially bio-compatible
+    \end{itemize}
+    \item Disadvantages:
+    \begin{itemize}
+        \item \textbf{Complex modelling}
+        \item Difficult to control ($\infty$ DoF)
+        \item Less powerful and precise than rigid robots
+        \item Support equipment typically kept off-board limiting motion and autonomy
+    \end{itemize}
+\end{itemize}
+Research in all fields of robotics-- enabling technologies (sensors, materials, fabrication techniques, computation), system synthesis (manipulation, mobility, human-robot interactions), application (exploration, medicine, conservation, inspection), and theory (modelling, controls, learning)-- can be applied to the field of bioinspired and biohybrid robots.
+% \end{minipage}}\end{center}
+
+
+
+\section{Materials for Soft Robotics}
+Material choice is important for soft robotics. The typical task list for creating a functional robot is as follows:
+\begin{enumerate}
+    \item Formulate suitable functional requirements
+    \item Select actuator material
+    \item Design + fabricate robot suitable for task
+\end{enumerate}
+Novel \textbf{smart materials} and \textbf{fabrication schemes} are important for the future of soft and biohybrid robots (especially the latter). These materials should be more \textbf{power efficient, multifunctional, compliant, and autonomous}. Compliance enables interactions.
+
+Soft materials can be classified by the \textbf{Young Modulus $E$}. This represents the relationship between \textbf{tensile stress $\sigma$ and axial strain $\varepsilon$} in the linear elatic region of a material. \emph{How much does a material lenghen under tension or compress under compression}. Note that it is not necessarily the same in all orientations.
+
+\begin{equation}
+E=\frac{\sigma}{\varepsilon}=\frac{\sfrac{F}{A}}{\sfrac{\Delta L}{L_0}}
+\end{equation}
+
+Traditional robotics typically utilize materials with Young's Modulus' of ~$10^{11} Pa$ or greater (glass, steel, diamond), and soft materials are anything softer, often from $10^{10} Pa$ (wood, bone) to $10^{6} Pa$ (cartilage), with materials in between like tendon, muscle, and skin. The softest typical materials used are hydrogels and elastomer around $10^4 Pa$.
+
+Another measure of hardness is \textbf{Shore hardness}, measured in \emph{Durometer}, which is also the device, which indents a material with different types of indentors (Type D is a 30$^\circ$ triangle, used for hard materials, Type A has a flatten end to not destroy soft materials). Shore hardness measures from \emph{00, A, D}, three different scales ranging from 0 to 100 depending on the depth of the remaining indent. \emph{A Shore 00 100 is a Shore A 75 and a Shore D 20}.
+
+\textbf{Poisson's ratio $\nu$} is a measure of deformation of a material normal to the direction of loading. \emph{If a material is stretched, how much thinner does is get?} 
+\begin{equation}
+    \nu = -\frac{d\varepsilon _{trans}}{d\varepsilon _{axial}}= - \frac{d\varepsilon_y}{d\varepsilon_x}
+\end{equation}
+\textbf{Positive strain indicates extension and negative strain indicates contraction} when calculating Poisson's ratio.
+
+Various factors need to be consider when designing a soft actuator:
+\begin{itemize}
+    \item Size scale
+    \item Power consumption
+    \item Actuation speed
+    \item Reaction to other stimuli
+    \item Biocompatibility
+    \item Operating environment (magnetic field needed?)
+    \item Remote or tether power source
+    \item Durability
+    \item Self-healing
+    \item Hysteresis (remanence of a physical property after input causing that property has ceased)
+    \item Anisotropy (does the material behave differently on different axes?
+\end{itemize}
+These materials can also be generally divided into 4 categories or two axes:
+\begin{itemize}
+    \item Fossil-derived or Bio-derived
+    \item Biodegradable or Non-biodegradable
+\end{itemize}
+
+\subsection{Fluidic Materials}
+\textbf{There are two primary forms of Fluidic Actuators:}
+\begin{enumerate}
+    \item Pneumatic actuators
+    \item Hydrolic actuators
+\end{enumerate}
+
+These are actuated by inflating/deflating pockets within a flexible material causing extension in a desired direction. Used materials must be soft, such as silicone, elastomers, or compliant mechanical parts like wood.
+
+Fluidic actuator's \textbf{basic working principle} is the bending of a constraint layer due to the extension of an outer layer (Slide 26-27). When using hydraulic actuators, \textbf{incompressible fluids are preferable to remove unwated extra compliance}.
+
+\textbf{Materials and their classifications are based on their properties.} Polymers can be classified depending on degradation mechanisms and source, such as if they're enzymatically degradable of hydrolytically degradable \emph{Slide 21}.
+
+\textbf{Polymeric materials} are important for soft robotics, produced via \textbf{polyurethane reactions}, \emph{crosslinking of polymeric materials}. Two notable ones are:
+\begin{itemize}
+    \item Urethane formation (isocyanite + alcohol):
+    \begin{equation}
+        R-N=C=O + H-O-R' -> R-NH(=O)-O-R'
+    \end{equation}
+    \item Urea formation (isocyanite + amine):
+    \begin{equation}
+        R-N=C=O + H-NH-R' -> R-H-c(=O)-NH-R'
+    \end{equation}
+\end{itemize}
+
+Other \emph{crosslinking} reactions are \textbf{silicone reactions}:
+\begin{itemize}
+    \item Hydrosilylation (platinum cured vinyl group): most common materials are made using this reaction (Ecoflex, dragon-skin, etc)
+    \begin{equation}
+        R=SiH+H_2C=CH-R' ->Pt-> R-Si-CH_2-CH_2-R'
+    \end{equation}
+    \begin{itemize}
+        \item Crosslinking reactions used in platinum-cured silicones are between silicon hydride (SiH) and vinyl (C=C) groups to form a crosslink
+    \end{itemize}
+    \item Condensation (tin cured silanol group):
+    \begin{equation}
+        R-SiH+HOSi-R' ->Sn-> R-Si-O-Si-R'+H_2O
+    \end{equation}
+    \begin{itemize}
+        \item Crosslinking reactions used in tin-cured silicones involves silicon hydrde (SiH) and silanol (SiOH) groups condensing \emph{to produce water}.
+    \end{itemize}
+\end{itemize}
+ A final popular form is a \textbf{hydrogel reaction} using \emph{free radical polymerization}:
+ \begin{itemize}
+     \item Free-radical polymerization:
+     \begin{equation}
+        H_2C-CH=C(=O)-O-R ->\Delta / hv->\cdot C_2H-CH(-C(=O)-OR)-CH_2-CH(-C(=O)-OR)-{CH_2...}_n
+     \end{equation}
+    \begin{itemize}
+        \item Free-radical polymerization of acrylates \emph{in response to light (hv) or heat ($\Delta$)} causing propagation of a growing radical chain by a \emph{continued reaction of unpaired electrons ($\cdot$)}.
+        \item Used in 3D printing.
+    \end{itemize}
+ \end{itemize}
+
+ \emph{To see how an inextensible elastomer layer is applied to an actuator, see Slide 32}. \textbf{Various other manufacturing methods can be seen in the slides following 32.}
+
+ Various special materials also exist in this realm. For example, \textbf{Diels-Alfer Bond} materials use the Diels-Alder (DA) reaction in which:
+ \begin{itemize}
+     \item At low temperatures, a network is formed due to high conversion to the DA bonds.
+    \item At high temperatures, the DA bonds fall apart, and the mobility of the polymer chains increases.
+ \end{itemize}
+ This way, if the material takes damage, it can be heated, then cooled to reform material bonds (Slide 45)!
+
+ \textbf{Granular materials} can be used to produce grippers by filling a bag with ground particula (sand, powder, etc) and removing air from the bag to jam the granular materials, enabling gripping if an object was in contact with the gripper in its soft state (Slide 52).
+
+ \textbf{3D printing} can also be used to produce hydraulic actuators with soft materials such as NinjaFlex or DragonSkin 10.
+
+There are various \textbf{fluidic actuator designs} (Slide 28):
+\begin{itemize}
+    \item Ribbed
+    \item Cylindrical
+    \item Pleated
+\end{itemize}
+Which are characterized by different bend angles and tip forces based on input fluid energy (Slide 30 to see comparison). Typically, ribbed designs have a high tip force at low fluid energy, cylindrical designs have a very high tip force at medium fluid energy, and pleated designs have a slightly higher tip force but for a much higher input fluid energy. Pleated designs however (alongside ribbed) can have a much higher bend angle for input fluid energy.
+
+There are many designs of \textbf{Compliant Parts}. A common example design for compliant parts is \textbf{fluid-driven origami-inspired actuators}. These used thin sheets  folded in origami shapes that enable extension and contraction and on outer skin. Fluid can be removed to contract and added to extend (Slide 53).
+
+These materials can be made with \emph{fiber-reinforced} exteriors by wrapping inextensible reinforcements about the extensible layer, enabling finer motion control.
+
+\subsection{Thermal Materials}
+Thermal materials are defined by actuating in some way depending on the material's temperature. This can be simple such as extension when heated and contraction when cooled, or much more complex.
+
+\textbf{Shape-memory alloys (SMAs)} (Slide 2) are a better known type of thermal material. These can be \emph{deformed when cold and return to a remembered state when heated}. They do this by existing in two different phases with 3 crystal structures (i.e. twinned martensite, detwinned martensite, and austenite), creating six possible transformations. They go between:
+\begin{enumerate}
+    \item Austenite (hot structure), with original shape.
+    \item Cooling to Twinned Martensite.
+    \item Deformed into Martensite.
+    \item Heated back to Austenite, returning to original shape.
+\end{enumerate}
+There are two common SMA effects: \textbf{One-Way and Two-Way}. One-way remembers only one shape at high temperatures and returns to this shape when heated. Two way remember one high temperature shape and one low temperature shape.
+
+There are also two designs for SMAs:
+\begin{itemize}
+    \item \textbf{Spiral design}:
+        Shaped into a coil, often with current running through to actuate with the ability to \emph{deform up to 300\%}. Often used for active springs as transverse actuators, where they contract when heated. 
+    \item \textbf{Straight design}:
+        Typically encased in conductive rubber to enable rapid heat transfer to create dynamic motion using smaller deformations (5-8\%).
+\end{itemize}
+
+\emph{Commonly used SMA materials can be seen on Slide 4}.  SMAs suffer from \textbf{slow response times} for cooling back to a usable state. This is an \textbf{issue when placed in silicone}, a thermally insulating material. Therefore, \emph{robots using SMA actuators either have sudden and infrequent cursts of motion, slow steady-state locomotion gait cycles with long recovery times, tether hardware to heat and cool, or take advantage of a marine environment to actively cool}.
+
+\textbf{Important design considerations} are:
+\begin{itemize}
+    \item Elastomer selection (elastic modulus, thermal conductivity)
+    \item Elastomer layer dimensions
+    \item Elastomer preset curvature
+    \item SMA wire diameter
+    \item Electrical Current delivery for coil-design activation
+    \item Duration of SMA activation
+    \item Cooling time (minimum time between actuation cycles)
+\end{itemize}
+
+A simpler material is using a \textbf{Polymer Material} such as fishing line extremely twisted producing \emph{coiled muscles}. These work as \textbf{polymer fibers change porosity in response to temperatue}, enabling contraction when heated. These can become fast, scalable, long-life tensile and torsional muscles, and lift loads 100x heavier than human muscle with 49\% contraction.
+
+Another material is a \textbf{Thermally Responsive Hydrogel Actuator}. Working principle is a hydrogel with a Lower Critical Solution Temperature (PNIPAM) swells and a hydrogel with an Upper Critical Solution Temperature (P(AAc-co-Aam)) shrinks, and visa versa, creating actuation (Slide 10). \emph{A LCST and UCST hydrogel are stacked in a bilayer structure}, and shape change occurs due to diffusion of water molecules between the materials. \emph{This is very slow due to slow cooling of water}.
+
+A constraint region can be added using PHEA Laponite Hydrogel with non-swelling properties created in a gradient alongside  swelling PNIPAM hydrogels below the LCST (Slide 15).
+
+\subsection{Electric Materials}
+\textbf{These rely on electrostatic forces for deformation.} Electroactive polymers (EAPs) change size/shape when stimualted by an electric field. These are \emph{energy-efficient with losses when dis/charging electrodes}. There are two principal types: \textbf{Dielectric elastomer actuators and Ionic polymer-metal composites}.
+
+\textbf{DEAs} transofmr electric energy into mechanical work. Often created by trapping soft insulating elastomer membrane between two electrodes causing actuation when charged (like a capacitor). \textbf{A voltage is applied between the electrodes and the electrical field within causes slimming in thickenss and enlargement of the area of the membrane.} This force pulling the electrodes together is known as the Maxwell stress:
+\begin{equation}
+    \sigma_{Maxwell}=\varepsilon_0 \varepsilon_r (\sfrac{U_0}{d})^2
+\end{equation}
+Where $\varepsilon_r$ is a property of the dialetric material, $U_0$ is the applied voltage, and $d$ is the dialectric material thickness. As can be seen, \emph{there s a quadratic effect}. AN issue is \textbf{Electrical/Dialectric Breakdown}, where the dialectric material becomes a conductor suddenly at high voltages (this occurs to all insulating materials at a certain breakdown voltage depending on shape and size). \textbf{More modelling information on Slide 10}.
+
+DEAs  offer key advantages over other options: \emph{High Energy Efficiency, Fast Response Time, Silence}. The also show signs of having a very high lifetime. However, high voltages are needed, with a low stroke, little controllability, and difficult to stack. DEAs are evaluated on:
+\begin{itemize}
+    \item Stroke
+    \item Speed
+    \item Efficiency
+    \item Lifetime
+\end{itemize}
+
+\textbf{DEAs can be configured} by stacking (Multi-Stack Actuator), folding (Folded Actuator), stacking many sheets and twisting (Twisted Actuator), or twisting long coiled sheets in a helical way (Helical Actuator) (Slide 13). They can also be configured into Cone Actuators by using a spring that is extended during actuation, a Tubular Actuator with an inner and outer electrode that lengthens when actuator, or a Roll Actuator that also lengthens when actuated.
+
+DEAs are \textbf{fabricated} using dielectric materials that don't allow current/arcs to pass through. These must have \emph{thin layers with high dielectric strength and high tensile strain}. Common materials are describe in Slide 15. Good electrode materials must have \emph{high tensile strain and high conductivity}. Example materials are carbon black mixed with PDMS. \textbf{Fabrication strategies} are described in Slide 16, but include blade coating, brushing, spraying, etc. They can also be created with \emph{3D printing} via either direct deposition (may shear due to contact) or \emph{inkjet printing} (limited material viscosity range).
+
+Another form of eletrical actuator is a \textbf{Hydraulically Amplified Self-healing Electrostatic (HASEL) Actuator}. These create hydraulic pressure locally by applying voltages to liquid dielectrics distributed through a soft structure. \emph{Liquid dielectrics in HASEL actuators enable self-healing after dielectric breakdown}. Some HASEL designs are:
+\begin{itemize}
+    \item \textbf{Donut-HASEL}: Circular nits with different electrodes place one on top of the other.
+    \item \textbf{Peano-HASEL}: units placed in series with the same electrodes, creating a cascaded length change.
+\end{itemize}
+
+\textbf{Ionic Polymer-Metal Composites (IPMCs)} are also common. These are a double layer high surface area parallel plate capacitor. Upon 1-5V voltage application, there is a \emph{migration of cations to the cathode and anions to the anode causing swelling of cation-rich clusters and shrinking of the other side}. This unbalanced stress in the membrane causes bending. These typically do not simultaenously create large deformations and fast responses.
+
+\textbf{Piezoelectric Actuators} convert an electrical signal in a precise physical displacement using the piezoelectric effect (\emph{not capacitance like HASELs and IPMCs}). These can be used to drive other soft actuators, i.e. controlling hydraulic valves and acting as small-volume pumps, \emph{enabling the development of soft actuators that can be controlled untethered}. These have key advantages: high accuracy, quick response, low consumption, electromagnetically noiseless, small size, and simple structure. However, they are quite stiff. There are two types:
+\begin{itemize}
+    \item \textbf{Stack actuators}: low stroke, high blocking force
+    \item \textbf{Stripe actuators}: Large mechanical deflection in response to electrical signal.
+\end{itemize}
+
+\subsection{Magnetic Materials}
+
+Magnetic actuators use a \textbf{magnetic field to create movement within Ferromagnetic materials} (although there are alternative, see Slide 5). Ferromagnetic materials are magnetized using a process called \textbf{hysteris}. \emph{An external magnetic field (B) is applied and the material's dipoles align themselves to the field. This alignment is partially retained after the field is removed, magnetizing the material (H) indefinitely (or until sufficient heat/opposing magnetic fields are applied (Slide 6)}. \textbf{Permeability} is the measure of magnetization that a material obtains in response to an applied field. \textbf{Saturation} describes the maximum flux that a material can reach within a field (Slide 8). \textbf{Remanence} describes the amount of magnetization remaining within the material after the external field is removed. \textbf{Coercivity} is the ability of a ferromagnetic material to withstand an external field within demagnetizing. High coercivity materials are called \emph{hard} and are used for permanent magnets, while low coercivity materials are called \emph{soft} (compared in Slide 12).
+\begin{itemize}
+    \item \textbf{Hard Ferromagnetic Materials}: The entire body aligns itself with an external magnetic field.
+    \begin{itemize}
+        \item Large hysterisis loss (less efficient)
+        \item Difficult to magnetize and demagnetize
+        \item Used for permanent magnets
+    \end{itemize}
+    Already magnetized, so a magnetic field can be applied creating a torque $\tau = M\cdot H$ where M is the magnetization of the body and B is the flux density.
+    \item \textbf{Soft Ferromagnetic Materials}: The domains align themselves with the magnetic field.
+    \begin{itemize}
+        \item Low hysterisis loss (efficient)
+        \item Easy to magnetize and de-magnetize
+        \item Used to make electromagnets (due to efficiency in applying field to magnetize)
+    \end{itemize}
+    Used by approaching a magnet to the material causing an alignment of the magnetic dipoles and can cause bending towards the magnet with force $F = \nabla B \cdot M$ where M is the magnetization of the body and $\nabla B$ is the magnetic flux gradient.
+\end{itemize}
+
+Hard materials can be created with an \textbf{internal sinusoidal flux} that bends in various ways when an external field with a specific strength and angle is applied (Slide 16). This is fabricated by \emph{wrapping EcoFlex and NdFeB (ferromagnetic material) wrapped around a rod and magnetized above coercivity, creating a sinusoidal pattern.}
+
+\textbf{3D printable programmed ferromagnetic domains in soft materials} can be used which have a composite ink of magnetizable particles of NdFeB alloy in a silicone rubber matrix which is magnetized by a field at the extruder head. Other resins can be used, including flexible UV resins for DLP/stereolithography printing.
+
+Magnetic actuators have various applications (medical as seen in Slide 20) and implementations (connected Quadropole magnets to create motions in Slide 21). Soft materals can be \emph{programmed with laser heating while a permanent magnetic is constantly applied at the} \textbf{Curie temperature} (Slides 22-23).
+
+A clear \textbf{issue} with magnetic materials is the need of a controlled external field to control them, limiting the use to being tether in an area requiring complex controls. However, they are very controllable, can be precise enough for medical applications, and are well understood.
+
+
+\subsection{Biological Materials}
+\label{subsec::biom}
+
+\textbf{Covered in more detail in Biohybrid Section (\ref{sec::bioh}).} There are two primary forms of biological materials that will be discussed:
+\begin{itemize}
+    \item \textbf{Living - Biological Cells}: 
+    
+    Complex heterogeneous materials requiring culturing cells. \emph{Used in robotics for specialized contractility} due to great deformation and motility. They are small, self-repair through cell proliferation, have intrinsic softness, are biocompatible, adaptible, and have a high eneergy conversion efficiency (using ATP). \textbf{Muscle tissue is used for biological actuation}, and there are two forms:
+    
+    \begin{itemize}
+        \item \textbf{Cardiomyocytes:} Produce involuntary contractions with a lower force generation and are difficult to grow in culture due to low division rate.
+        \item \textbf{Skeletal Muscle Cells:} Produce high force, controllable, voluntary contractions, that are easy to culture in 3D environment. Though generation can be challenging.
+    \end{itemize}
+
+    Discussing \textbf{Muscle actuator cells}, hey are sourced from experimental animals, human biopsies, or cell lines, and cultured in a medium of essential nutrients, growth factors, hormones, and necessary gases. Mammalian cell culture require specific conditions described in Slide 8, but other animals (fish, molluscs, insects) have more robust cells. \emph{Working conditions without exchanging the culture medium from temperatures from 5 to 40$^\circ$C for ~90 days before expiring.}
+
+    \item \textbf{Nonliving - Biomaterials}:
+
+    Materials that interact with biological systems (assisting to keep cells alive). Must be biocompatible for cell-viability, growth, and functioning. These may be of natural (bone, antler, etc) or synthetic origin, and are often used to create 3D scaffolds or matrices for growing 3D cell cultures. Non-living material can have porous, fibrous, or composite morphologies, which have different uses.
+
+    \textbf{Natural biomaterial polymers} can be made of collagen, fibrin, silk, gelatin, etc, and \emph{ are highly biocompatible, naturally contain native signaling cues for cellular attachment, proliferation, and differentiation, and are suitable for chemical modifications}. However, they are less precisely tunable for porosity, atopography, mechanics, and inherent biologic variability.
+
+    \textbf{Synthetic biomaterial polymers} are variations of PCL, PGA, PLA, PLG, PU, PEG, etc. \emph{They are easy, consistent, and inexpensive to fabricate, can be manufactured with detailed geometries, have tunable degradation profiles and mechanical properties, and can be created with additional properties like ferromagnetism or electrical conductivity.} However, they are less biocompatible.
+
+    More comparisons can be seen on Slide 11. When used for muscle tissue engineering, \emph{an ideal scaffold is developed in the overlap between ideal physical properties for the material and the requirements for the muscle tissue to proliferate and survive (Slide 10).}
+\end{itemize}
+
+\subsection{Chemical Materials}
+
+Working principle is \textbf{triggering material deformation through external chemical stimuli}, such as the presence of specific chemicals or pH values.
+
+\textbf{pH-Responsive Polymers} are weak polyacids or polybases which undergo an ionization/deionization transition from pH ~4. \textbf{Alkali-swellable} materials swell when in contact with a base. \textbf{Acid-swellable} materials swell when in contact with an acid. \emph{There are 2 functional groups:}
+\begin{itemize}
+    \item \textbf{Carboxyl Groups:}
+    \begin{itemize}
+        \item \textbf{Low pH}: \emph{Acids cause volume shrinkage} as carboxyl groups are protonated.
+        \item \textbf{High pH}: \emph{Bases cause volume swelling} as carboxyl groups dissociate in carboxylate ions with a high charge density in the polymer.
+    \end{itemize}
+    \item \textbf{Pyridine Groups:}
+    \begin{itemize}
+        \item \textbf{Low pH}: \emph{Acids cause volume swelling} as pyridine groups are protonated causing charging repulsions between neighbouring protonated groups.
+        \item \textbf{Hgh pH}: \emph{Bases cause volume shrinkage} as the groups deionize and charge repulsion is reduced and polymer-polymer interactions increase, reducing hydrodynamic diameter of the polymer.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Organic Molecule-Driven Polymeric Actuators} use a bilayer film \emph{with layers of polymeric films with structural anisotropy}. An example is using one layer of PA-6 and one of Poly((AAm-co-AA)-g-CMC). The PA-6 expands when in contact with water, causing curling as the Poly(...) acts as an inextensible layer, and it retracts when in contact with Ethanol. \textbf{Inhomogeneous swelling} can be caused when porous polyimide films roll into tubes when exposed to organized molecules and unfold when dried out in air, where the porosity can be controlled by adding silica particles, which govern the swelling degree providing control. Organic Molecule-Driven POlymeric Actuators are used to produce specific motion for task-specific functions. \emph{Contact with organic molecules can tune molecular order, swelling ability, crystallzation/molecular reconfiguration, and alginment of low-dimensional elements.} Example on Slide 8.
+
+\textbf{Hydroelastomers} are composite materials that swell highly when in contact with water. These can swell to be composed of ~80\% water by weight. They are used in diapers due to this property, but can also be controlled by using non-swelling ribs (like the fibers and inextensible layers for fluidic materials) to control motion. See Slide 10.
+
+Chemical actuation is useful when a reaction to a specific compound is desire in a more-or-less controlled medium. They can be tuned to react to very specific chemical stimuli as well.  They can also be used at highly small scales. The issue for robotics applications is that every part of the material must make contact (a large volume's center may not react) to actuate, and the medium must be very controllable.
+
+\subsection{Light Materials}
+
+\textbf{These either react to or module light}, and are referred to as \emph{Photosensitive} and \emph{ Structured Materials} respectively.
+
+\begin{itemize}
+    \item \textbf{Photosensitive Materials:}
+
+    \emph{Undergo shape change under illumination}, but it is important that the mechanism be reversible. \emph{Irradiation changes physical or chemical properties} such as: shape, surface wettability, membrane permeability, solubility, fluorescence, transition and phase-separation temperatures. There are two main materials used:
+    \begin{enumerate}
+        \item \textbf{Photoisomerizable molecules} in photoresponsive liquid crystalline elastomers. For example: \emph{isomeric azobenzene can transform from trans to cis isomeric azobenzene when exposed to UV light, changing length from 0.9nm to 0.56nm, and back when exposed to visible light.} This can be applied using structured light to control the actuation dynamics of the soft body holding this molecules.
+        \item \textbf{Photoreactive molecules} in photoresponsive polymers. For example, \emph{peptide amphiphiles expel water in response to visible light, which can be used to cause movement when on a special grooved material (Slide 6)}.
+    \end{enumerate}
+
+    \item \textbf{Structured Materials:}
+
+    \emph{Modulate light and can be used as a sensor.} For example, Fiber Bragg Gratings Sensors (FBGS) use a core fiber that is grated with an intense laser light to have a specific periodic pattern, creates a fixed index modulation when exposed to light. Wavelengths at a specific length, the \textbf{Bragg wavelength}, are not phase matched to the grating in a part of the core, and essentially become transparent. If the fiber is stretched/compressed, then the gratings change shape, making shape changes detectable. An application of this is adding various gratings along the length of a various fibers combined in a coating, and shining light through it. When bent, the specific light pattern that is returned identifies the curvature of the collection of fibers with very advanced hardware and software.
+    
+\end{itemize}
+
+\section{Design \& Fabrication of Soft Robots}
+
+A functional robot must be designed and fabricated to suit the requirements of a task. When designing a robot, \textbf{constraints must be determined}:
+\begin{itemize}
+    \item \textbf{Task:}
+        Flight. Locomotion. Manipulation: Manipulate what? Fragile? Volatile? Chemicals? Medical: Specific requirements- sterility, anti-magnetic, biocompatible,...)
+    \item \textbf{Scale:}
+        um (Micro robots), mm, cm, dm, m
+    \item \textbf{Environment:}
+    \begin{itemize}
+        \item Air: low-density (need light payload), effects of wind.     
+        \item Water: water-tightness, density of water, buoyancy
+        \item Land: power density, rough terrain
+        \item Inside a living being: small size, biocompatibility
+    \end{itemize}
+\end{itemize}
+
+Internal design constraints must also be considered: actuation modality, power source, sensors, data + energy delivery, fabrication techniques...  The source of movement needs to be determine (at joint or away from joint using tendons). There are 2 covered fabrication techniques for soft robotics: \emph{Casting and 3D Printing}.
+
+\begin{itemize}
+    \item \textbf{Casting Techniques:} Fabricating or replicating structures using stamps, molds, and masks.
+    \begin{itemize}
+        \item Soft Lithography: Layers (i.e. a inextendible layer and a layer containing pleats for a fluidic actuator) are casted and cured in separate molds and joined using a thin layer of uncured elastomer as glue.
+        \item Lost-Wax Casting: Used to produce interior cavities in molded elastomer materials. A wax core is created in a mold, then assembled within an exterior mold, in which material is placed to create the true desired shape (Slide 19)
+        \item Injection Molding: Pellets are fed into an extruder with an injection screw causing plastification as the screw crushes and mixes the pellets ad injects them into the mold. This is allowed to cool and ejected.
+    \end{itemize}
+    \item \textbf{3D Printing Technologies:} Additive manufacturing that creates 3D object from design files through digitally controlled deposition of material layers.
+    \begin{itemize}
+        \item Fused Deposition Modeling (FDM) / Fused Filament Fabrcation (FFF): a solid thermoplastic is extruded through a heated nozzle to melt, deposit, and fuse the material. For soft robotics, material choice is typically Ninjaflex. As this requires melting the material to deposit it, it limits  the use of thermoplastic polymers.
+        \item Direct Ink Writing (DIW): A viscoelastic ink flows through a nozzle and solidifies into a solid object upon deposition. This works by applying pressures above the yield stress to be deposed, then the sudden stress reduction causes solvent evaporation, phase change, and polymerization (solidification). \emph{This can be done with two part silicone elastomers where two uncured components are mixed with a drill head then extruded through a nozzle.} 
+        \item Selective Laser Sintering (SLS): A bed of thermoplastic powder is selectively heated by a laser reflecting through a mirror, which causes localized melting and fusion, creating one layer. Another layer of powder is applied and this process is repeated. This process requires thermoplastic material in the form of a powder with homogeneous morphology to promote a dense and uniform powder bed.
+        \item Stereolithography (SLA): A bath of liquid photopolymer is selectively exposed to light reflected off a mirror and polymerizes due to photoirradiation. Printed upside down at the build stage lifts the printed part upwards out of the bath to produce new layers.
+        \item Inkjet Printing: Small droplets of liquid ink are ejected from print heads and solidify on the surface in response to either heat or light. Jetting and solidification are repeated until the part is built. This process is highly accurate with a resolution of 50 $\mu m$. Very limited by the viscosity range of ink.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Fluidic Fabrication}
+
+Many options for designing fluidic actuators. Can use positive pressure (expand to actuate) or negative pressure (collapses to actuate). Typically, designs use the former using hollow chambers in an elastomer that are filled with fluid to expand against an inextensible layer, creating actuation.
+
+These offer one advantage of working well underwater, as all electronics can be well insulated separately from main actuation principle. \emph{This makes communication complicated}, but low-power consumption acoustic transmitters and receivers with pulse-based frequency shift keying can be used, filtering out issues from multipath reflections, doppler shifting, and ambient noise (Slide 28).
+
+\textbf{Cylindrical actuator design} is simple and serves to create stiff segments using Multi-Step Pin Casting (Slide 32). Pneumatics can be created using Lost-Wax Core Based Casting, and can be reinforced with fibers. The details of Lost-Wax Core Casting to \textbf{create multi-segment arms} are show in Slide 37. Sensors can be added to add proprioception.
+
+\textbf{Negative Pressure} actuators are contextualized with two designs (Slide 69). One has horizontal beams that buckle when air is evacuated while vertical beams remain straight (VAMPs), creating linear actuation. \textbf{Fluid-Driven Origami-Inspired Artificial Muscles (FOAM)} use origami to dictate the direction of actuation, as an exterior skin collapses around the intern origami skeleton. Fine particulates can be used to create grippers as well.
+
+
+\textbf{Advantages:}
+\begin{itemize}
+    \item Easy to design (fluidic chamber + structure).
+    \item Energy transfer medium (fluid) taken from and released back to environment.
+\end{itemize}
+\textbf{Disadvantages:}
+\begin{itemize}
+    \item Energetically inefficient (pump -> fluidic energy -> mechanical energy).
+    \item Hydraulic:
+    \begin{itemize}
+        \item High density of actuators.
+        \item Predominantly underwater (complications insulating).
+    \end{itemize}
+    \item PneumaticL
+    \begin{itemize}
+        \item Bulky.
+        \item Compressibility of gas is important.
+        \item Predominantly bound to ground/grasping operations.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Tendon Fabrication}
+
+Tendon based actuators are \textbf{more dextrous and biomimetic}, but very fragile compared to traditional grippers. They are also expensive. Elastomers can be pulled using cables for motion and grasping, with servos stored away from the delicate, dextrous hand (in the wrist, for example). One must consider the following when designing a tendon driven actuator:
+\begin{itemize}
+    \item Tendon type (extensible, inextensible).
+    \item Routing of channels guiding then tendons (often coated in teflon to reduce slippage).
+    \item Power source (electric motor placement, fluidic actuation, batteries, tethering...).
+\end{itemize}
+
+There are a few join types.
+\begin{itemize}
+    \item Pin: Simplest approach, but difficult to manufacture and breaks when overstressed.
+    \item Flexure: Flexible joint connecting inextensible components, pulled by tendons (Slide 10).
+    \item Synovial: More biomimetic, with many possible designs (ball and socke, rolling). Difficult to build and dislocates when broken.
+    \item Rolling Conact: Using straps on either side (antagonistically) of the moving components. Low friction, but dislocate quite easily (Slide 13).
+\end{itemize}
+
+These can be actuated using Servo motors, which are cheap, easy to control, and efficient, but quite bulky. Alternatively, a fluidic design can be used to pull tendons. Pneumatics are naturally compliant, but complex. Hydraulics are very strong, but not compliant and require difficult plumbing.
+
+A good finger design can be seen in Slide 17.
+
+\textbf{Advantages:}
+\begin{itemize}
+    \item High force transmission.
+    \item Electromagnetic motors are efficient.
+    \item Volume of force generation and action do not need to be the same (gear ratios: $Power = \tau * \omega$).
+    \item Mimics biological musculskeletal systems.
+\end{itemize}
+\textbf{Disadvantages:}
+\begin{itemize}
+    \item Friction at joints.
+    \item Routing through multiple links/complex systems is difficult.
+    \item Requires rigid attachment points in soft structure (like bones).
+    \item Rigid motor needed.
+\end{itemize}
+
+\subsection{Dielectric Elastomer Actuator (DEA) Fabrication}
+
+Designed with 3 primary components:
+\begin{itemize}
+    \item Actuator (electrode - dielectric material - electrode).
+    \item Routing (wiring, embedded conductive material...).
+    \item Power source (battery, tethered...).
+\end{itemize}
+
+There are a few fabrication strategies for the layers. Blade coating uses a reservoir of mixture that is output of a gap and run over by a blade to keep a smooth layer. DEAs ca also use spray deposition in a solvent, but this can cause pores/irregularities when the solvent evaporates. They can be brushed on as well.
+
+HASELs use a dielectric liquid rather than an elastomer, which enables \emph{larger displacement}. These can be placed in series as Peano-HASELs or Donut-HASELs. Due to benig fabricated of liquid, they also naturally self heal.
+
+\textbf{Advantages:}
+\begin{itemize}
+    \item Direct conversion of electrical to mechanical energy.
+    \item Energy efficient (charging and discharging of DEA).
+\end{itemize}
+\textbf{Disadvantages:}
+\begin{itemize}
+    \item High voltages needed.
+    \item Low max force output.
+    \item Difficult to manufacture.
+    \item Unreliable ($10^5$ cycle limit).
+\end{itemize}
+
+\subsection{Shape Memory Alloy (SMA) Fabrication}
+
+Spiral design used for active springs can be actively heated using electricity and cause much deformation. This is the more useful design for actuators. Straight designs are encased in thermally conductive rubber to achieve shorter but robust dynamic motion over extended operating times. Good for grasping.
+
+\textbf{Advantages:}
+\begin{itemize}
+    \item High power density.
+    \item Easy to fabricate (wire, Joule heated + insulating elastomer).
+\end{itemize}
+\textbf{Disadvantages:}
+\begin{itemize}
+    \item Slow speed (particularly when cooling).
+    \item Thick form factors challenging to achieve (since whole material must be heated).
+    \item Inefficient.
+    \item Temperature-controlled environment needed.
+\end{itemize}
+
+\section{Biohybrid Robotics}
+\label{sec::bioh}
+\textbf{Biohybrid robots are described to be constructed by integrating living cells with soft materials}, though there are various definitions (Slide 5) that all come to a similar conclusion. Cells are the smallest units of life. \emph{Living organisms are composed of cells, maintain homeostasis, present a life cycle, responsive to stimuli, undergo metabolic changes and growth, adapt to their environment, reproduce, and evolve.} 
+
+\textbf{Why use biohybrid robots?} Regeneration, social intelligence, shape change, integration with environment, evolution... They have \emph{intrinsic softness, environmental compatibility, energy conversion efficiency, integrated functions, and self-healing}. Currently, there are ideas to replace all components of a robot with biological components: DNA-based mechanisms, bacteria/retina based sensors, muscle-based actuators, neural cells for control, cardiomyocyte-based power generation.
+
+As described in \ref{subsec::biom}, there are two biological actuator materials: biological cells (living) and biomaterials (non-living).
+\begin{enumerate}
+    \item \textbf{Biological Cells}:
+
+    Biological cells are \emph{complex heterogeneous materials}, bu useful because of \emph{deformation and motility in use as an actuator}. Muscle tissue is small, self-repairing, intrinsically soft, environmentally safe, adaptable, and has high energy conversion efficiency. There are 2 form of muscle tissue used as actuators: \textbf{Cardiac muscle} (heart) and \textbf{Skeletal muscle} (leg).
+    \begin{itemize}
+        \item \textbf{Cardiomyocytes:} spontaneous contractility, difficult to grow in culture, low force generation.
+        \item \textbf{Skeletal muscle cells:} controllable contraction, high force generation, difficult generation but easy culturing in 3D environment.
+    \end{itemize}
+    Cell cultures must be grown in a \textbf{medium containing essential nutrients, growth factors, hormones, and gases.} Mammalian cells require specific conditions (Slide 17) while other species have more rocust cells.
+
+    \item \textbf{Biomaterials}:
+
+    Biomaterials are non-living but biocompatible materials that interact with biological systems. These can be made of synthetic (polymers) or natural materials (collagen, keratin, gelatin...). See an exact list on Slide 20.
+\end{enumerate}
+
+There are \emph{3 main levels of integration: Nanoscale (proteins), Microscale (bacteria), and Macroscale (muscle tissue)} (Slide 24). For biological actuation at a sub-cellular level it begins with nanoscale molecular motor-powered actuators called actin-myosin motors (Slide 27). There are also kinesin motors, which transport cells along fixed microtubule highways. Actin-myosin motors combine into sarcomere at the microscale, which combine in parallel into myocytes, which composed 2D muscle tissue at the macroscale. This can then be built into 3D muscle for biological soft robots.
+
+\begin{itemize}
+    \item \emph{Nanoscale applications to biorobotics:} Kinesin motors can be immobilized on a surface and used to move the microtubules along a surface to carry a payload. DNA enzymes can be used to autonomously trigger actions of DNA origami such as moving, turning, or following enzymes.
+    
+    \item \emph{Microscale applications to biorobotics:} Single cell microswimmers (baceria, sperm, algae...) can be used to propell microscale robots. For very small swimmers, the Reynolds Number $Re = \sfrac{\rho V l}{\eta}$ is a dimensionless parameter relating density, volume, length, and fluid viscosity to describe the ratio of inertial and viscous forces. The \textbf{Scallop theorem} states that \emph{symmetrical motion cannot propel a swimmer in a Newtonian fluid} (like blood). Therefore, asymmetrical mechanisms (like a sperm's flagellum) are used. Sperm cells can be used in the bloodstream for targeted drug delivery (i.e. gold nano-particle coatings that can kill cells with localized heating). Bacteria have a plethora of attachment strategies that can be used to transport variously shapred cargo. Single cells can also be used to create microwalkers or microgrippers. Slide 31 contains more examples.
+    
+    \item \emph{Macroscale applications to biorobotics:} Tissue based actuators using muscle tissue. Biohybrid robotics uses skeletal and cardiac muscles as they have strong contractions, unlike smooth muscle. Skeletal muscles are stronger and easier to grow, and are controlled using a signal. Cardiac muscles are weaker but can self-propagate a signal (like a heartbeat). Various designs are shown in Slides 42-44. The primarily shown example has a ring of muscle tissue transferred onto a skeleton (two columns) that is slightly compressed. The muscle tissue can be lightly damaged to promote muscle repair and propagation. These can be cotrolled using electrical signals to pulsate and squeeze the skeleton.
+\end{itemize}
+
+Discussing \textbf{tissue based actuators}, there is a first question of sourcing. There are two design strategies to integrate bioactuators with biomaterials: \textbf{Top-down or bottom-up}. 
+\begin{itemize}
+    \item \textbf{Top-down} includes excision of tissue and its direct integration with a robot (Slide 47).
+
+    This holds disadvantages or reduced performance due to a lack of sufficient nutrients and a limited possibility of scaling or varying the size and shape of the muscle. There are also ethical concerns due to the need for animal sacrifice.
+    
+    \item \textbf{Bottom-up} includes sourcing a biopsy of cells that are grown on a scaffold into tissue specially to integrate with a robot. 2D cell cultures are grown into 3D tissue in a sequence shown in Slide 52. (?) There are many advantages to this approach. Cells can be developed in 2D and 3D, have increased design flexibility and environmental robustness, have a controllable structure, a longer life time, improved self-healing, and can respond to chemical and electrical stimuli by design, and can be engineered to respond to optical stimuli (lights).
+    
+    \textbf{Muscular thin films (MTFs)} can be fabricated on 2D sheets of thin film of PDMS with either cardiomyocytes or skeletal muscular cells, shown in Slide 59. This has been used to create Medusoid swimmers (Slide 61). Other methods have been found to fabricate 3D constructs using 2d sheets including: using a stress-induced rolling membrane that stretches a top layer with a non-stretched bottom layer constraining one extremity (Slide 63), using 3d hydrogel structures, aligning cells on rigid micro-topographical patters and transferring them to a soft degradable substrate, and 3D printing and micro-molding to create structures under active mechanical tension like the previously mentioned rings with pillars.
+
+    Looking more at ring constructs with self-stimulating skeletons, this has been approached in several ways. Detailed in Slide 68, myoblasts are cultured in a ring of hydrogel, which is placed around a skeleton after 2 days, which is stretched over about a week. One skeleton design uses a spring that counteracts the contractions of the muscle (instead of pillars).
+    
+    A key challenge in the bottom-up approach is causing cell differentiation from satellite cells into myofibers to create muscle tissue.  
+\end{itemize}
+
+There are general challenges for engineering living materials: \emph{functional muscle cell development, scaling up, multimaterial 3D printing, vascularization, and reproducibility}. There are also long-term survival and maintenance issues and ethical issues to consider. \textbf{Bioprinting} is a precise technology to deliver cells, biomaterials, and supporting biological factors to build functional 3D constructs. 
+
+\textbf{Control of biological actuation} has 4 main types: \emph{electrical, optical, biochemical, and electromechanical.} Primarily, bio-actuators are controlled through the plasma membrane, which has an eletrical potential difference on either side used to transmit signals between difference parts of a cell. An action potential can be developed and passed down muscle fiber as a stimulus to contract, controlled by neurons. \emph{The native mechanism for muscle cells is described on Slide 80 (updated deck) using various electro-chemical reactions to drive contraction and relaxation.} This is described on Slide 81 in detail.
+
+\begin{itemize}
+    \item \textbf{Electrical Control:}
+
+    Electrodes on a flexible substrate are sent through to skeletal muscle tissue in a collagen structure in a culture medium. When turned on, the muscles contract bending the collagen structure. This can be used with pulsed DC voltage to produce measurable contractions at a set frequency.
+
+    \item \textbf{Optogenetic Control:}
+
+    Optogenetic cells allow a certain level of light to cause excitatory or inhibitory effects. These genes can be programmed into a virus that can spread it through tissue, enabling a controlled reaction to light. The light causes optogenetic cardiomyocytes to actuate, enabling certain chemical channels to open or close. Optogenetically stimulated muscle tissue can be attached to a skeleton to produce contractions and propulsion, as seen in Slide 88 with a ray-like swimmer using \emph{light sensitive cardiomyocytes.} Wireless $\mu$ LEDs can be added to a microcontroller as well, enabling wireless control. This overlaps with neurological control slightly, where motor neurons can be optogenetically modified.
+
+    \item \textbf{Neuron Control:}
+
+    Neurons can be used to stimulate muscle tissue in vitro. They can be activated using optogenetics, bioelectronics, or chemical stimulation. This can be used to power skeletal muscle at a desired frequency. 
+    
+    \item \textbf{Electromechanical Coupling:}
+
+    Cardiac muscle cells are placed on either side of a paper-encased gelatin body. Optogenetic control can be used to allow certain lights to activate either sides' muscles, creating realistic swimming motions. Due to the design of the fish, the motion is also spontaneously continued thanks to cardiac cell automaticity. These designs have long-lasting performance and are biocompliant.
+
+    \item \textbf{Biological Control:}
+
+    A form of hybridization between biological organisms and electrical controllers, or visa-versa. Cellular responses can be used to control robots like using slime-mold tissue reacting to light to control an omnidirectional hexapod robot. Similarly, electrical stimuli can be used to control biological organisms like a cockroach (slightly ethcally questionable) by applying shocks antagonist to the desired direction of travel depending on the computation of a small computer with a camera.
+
+    \textbf{Biosensors} are also being developed, though it is a generic term describing all elements from Slide 106 containing Samples containing a Bioreceptor which passes a message to an Electrical Interface which finally passes the signal to an Electronic System that can use the signals to produce some output or input. Bateria can be used as biosensors with a variety of \emph{sensing units, processing circuits, and actuator parts} that report an output. This can be used to produced \emph{programmable probiotics for cancer detection} that are orally administered and naturally spread in the gut and produce a specific enzyme if in the presence of a tumor, which is detectable in urine (Slide 107). \emph{Sound can also be detected} using the tymphanic ear of a locust, which has been demonstrated to be able to make a robot react to claps.
+\end{itemize}
+
+\textbf{Biological powering is also relevant for these systems.} \emph{Enzymatic propulsion} for example has been demonstrated to be viable. \emph{Microbial Fuel Cells (MFCs)} are bio-electrochemical transducers that convert biochemical energy from microorganisms into electricity. This can be used to power ultra-lo power electronics, and has the advantage of creating an actuator that can be sensitive to fuel type changes due to temperature change (due to starvation of the microorganisms).
+
+\section{Modelling and Control}
+
+Think of an elephant trunk, which can be used to sense and navigate an unknown environment, sense for objects, grasp them, and execute precise motions.
+
+\subsection{Model-Free Sensing and Control}
+
+Modeling soft robots for integrated systems and closed-loop control is crucial for viable use. This is typically done by first modeling a single soft actuator, of which many can run in parallel, then creating a model for multiple soft actuators in series for more complex mechanisms.
+
+The first step of control of a soft robot is \textbf{bend and force sensing.} When creating a pneumatic finger with lost-wax casting, a force sensor and resistance based bending sensor can be placed in the mold before filling. The force and shape feedback used with basic AI enables clustering data to identify what objects are being grasped, for example. K-Means clustering is used to plot shape and force feedback of identified objects and separate them into clusters, which later samples of grabbed objects can be fit into.
+
+\textbf{Multiple segments placed in series} are more complex, but important for creating long controllable manipulators. One such robot's motion was validated using motion capture placed at every articulation between different controllable segments. A cascaded controller uses the external localization to describe the robot's curves using a kinematic model with piecewise constant curvature arcs. This is passed into a curvature controller that calculates the required step between the current curvature and the desired curvature for the motion, which is fed into a PID volume controller that controls syringe pumps that pump air into the pneumatic joints.
+
+When moving in a confined space, the model also considers the size of the robot given a prediction of its inflation deformation so that it does not hit boundaries. This is important to not get the robot stuck (Slide 19). It enables a multi-segment arm to navigate a maze using only a kinematic model and quasi-static controller.
+
+\emph{It is assumed that the robot has} \textbf{Piecewise Constant Curvature (PCC)}. This enables modeling in $s \in C^4$ space (continuous subspace 4), which has infinite solutions and requires complex solving. \emph{This assumes that every segment's curvate is separate and constant, and end-points are continuous and tangent to the previous segment}. This enables modeling the robot in \textbf{Joint Space} $q \in \mathbb{R}^n$ space fr $n$ joints, whch can be solved using \emph{Equations of Motion (EoM)}.
+
+\textbf{For grasping} an object with a known position, this can be achieved by moving the bottom of a pneumatic gripper to a potential waypoint at circles of multiple radii. Several waypoints are checked for feasibility at further out circles and eliminated as the arm moves in. This is repeated for every circle until the gripper is placed at the final waypoint, at which point it can be actuated to grasp the object.
+
+All of this is model free PID control though. PI control allows only for slow motions, which are not practical. A \textbf{quasi-static closed loop controller} does not enable precise and dynamic interactions with the environment. One can do whole body motion and clunky grasp and place motions, but these are not precise and slow, therefore a dynamic model is needed (following the constant segment curvature assumption).
+
+\subsection{Dynamic Minimal Parameter Modeling for Model Based Control}
+
+Through the \emph{Constant Curvature per Segment Assumption}, a continuous soft arm can be modelled at piecewise curvature in $q \in \mathbb{R}^n$ rather than $s \in C^4$, which has infinite solutions. The \emph{soft state $q$ joints can be mapped to a rigid state}.
+
+\begin{itemize}
+    \item \textbf{A Kinematics Only Model} can be created using 2 Revolute Joints about 1 Prismatic Joint $P-R-P$, where $q$ is the angle from the tangent of the bend at the beginning of the joint of length $L$ to the tangent at the end of the joint bend. The two Revolute Joints are modelled to have turned by $\sfrac{q}{2}$, with the Prismatic Joint having a length of $\sfrac{Lsin(\sfrac{q}{2})}{\sfrac{q}{2}}$ (Slide 4). This matches the kinematics of a soft segment.
+    \item \textbf{A Dynamics Model} that matches Kinematics and Dynamics adds a \emph{point mass $\mu$ splitting the prismatic joint into 2}. The new structure is $R-P-\mu-R-P$, with the length of each Prismatic joint being $\sfrac{Lsin(\sfrac{q}{2})}{q}$, and the Revolute joints each having an angle of $\sfrac{q}{2}$ as in the Kinematics only Model. Visualizations can be seen in Slide 6.
+\end{itemize}
+
+\emph{There are other dynamics model options for mapping rigid to soft by moving the point mass}. These are shown in Slide 7. By placing the mass at the extremity of the segment, a minimal $R-P-R-\mu$ model can be used. A rotational joint can be placed at the point mass to have an $R-P-R(\mu)-P-R$ arrangement.
+
+\emph{When using this mapping, the kinematics must be mapped back to the soft robot}. The rigid robot's $R-P-P...$ space is considered an \textbf{Augmented State:}
+\begin{equation}
+    \xi = [R, P, P, R]^T, \Dot{\xi}
+\end{equation}
+This augmented state must be mapped to the curvatures of the Soft Robot's joint curvatures $q, \Dot{q}$ using a \textbf{Map:}
+\begin{equation}
+    \xi = m(q) -> m_i(q_i) = \left[\begin{array}{c}
+         \frac{q_i}{2} \\
+         L_i \frac{sin(\frac{q_i}{2})}{q_i} \\
+         L_i \frac{sin(\frac{q_i}{2})}{q_i} \\
+         \frac{q_i}{2}          
+    \end{array}\right]
+\end{equation}
+To perform dynamics calculation, there is a also a \textbf{Jacobian of the Map:}
+\begin{equation}
+    J_m(q)=\frac{\partial m(q)}{\partial q}
+\end{equation}
+\begin{equation}
+    J_{m, i} = [\frac{1}{2} L_{c,i} L_{c, i} \frac{1}{2}]^T
+\end{equation}
+\begin{equation} 
+    L_{c, i} = L_i \frac{q_i cos(\frac{q_i}{2}) - 2sin(\frac{q_i}{2})}{2q_i^2}
+\end{equation}
+The \emph{Map} and \emph{Map Jacobian} are used when transferring from Soft Joint space $q, \Dot{q}$ to Augmented State $\xi, \Dot{\xi}, \Ddot{\xi}$:
+\begin{equation}
+    \left. \begin{array}{c}
+        \xi = m(q) \\
+        \Dot{\xi} = J_m(q)\Dot{q} \\
+        \Ddot{\xi} = \Dot{J_m}(q, \Dot{q})\Dot{q} + J_m(q)\Ddot{q}
+    \end{array}\right\}
+\end{equation}
+
+These dynamics are used to transfer an \textbf{Equation of Motion} containing 5 components:
+\begin{equation}
+    B_\xi(\xi)\Ddot{\xi} + C_\xi(\xi,\Dot{\xi})\Dot{\xi} + G_\xi(\xi) = J_\xi^T(\xi)f_{ext}
+    \label{eq::EoMXi}
+\end{equation}
+Mapable to soft robot joint space:
+\begin{equation}
+    B(q)\Ddot{q} + C(q,\Dot{q})\Dot{q} + G(q) = J^T(q)f_{ext}
+    \label{eq::EoMq}
+\end{equation}
+Where: \textbf{B} is the Inertial component, \textbf{C} is the Coriolis and Centrifugal component, \textbf{G} is the Gravitational component, \textbf{J} is the Jacobian, and \textbf{$f_{ext}$} are external forces applied to the robot. See Slide 9 to see the exact equations to map from \eqref{eq::EoMXi} to \eqref{eq::EoMq}.
+
+The \textbf{Featherstone Algorithm} is used to efficiently calculate the components of the Equation of Motion for series of linked joints in Augmented State $\xi$, and can then be transferred into our Joint State $q$. This does not include an important model for Soft Robotics, \textbf{Impedance}.
+
+\textbf{Impedance is modeled using a spring-damper within the joint} (Slide 11) to describe the elasticity of a segment. This requires knowledge of a \emph{Spring Constant $\kappa$, Stiffness Matrix $K$, Damping Constant $\beta$, and Damping Matrix $D$} to model the material. The area moment of inertia $I$ must also be known. \textbf{The derivation of the stiffness and damping are shown in Slides 11-12}, but the conclusion is that there is a linear stiffness (proportional) and damping effect (differential) effect. \emph{Dissipative [$D$], Elastic [$K$], and Actuation forces (torques) [$\tau$] are added to the Equation of Motion:}
+\begin{equation}
+    B(q)\Ddot{q} + (C(q,\Dot{q}) + D)\Dot{q} + G(q) + Kq = \tau + J^T(q)f_{ext}
+    \label{eq::EoM}
+\end{equation}
+Producing the \textbf{Linear Spring-Damper Model}.
+
+This also works \textbf{in 3D using 2 Revolute joints at each extremity and 2 Revolute joints at the point mass} (Slide 17). In 3D, there are two rotations: curvature $\theta$ and off-plane rotation $\phi$, where $q = [\phi \theta]^T$. In this, impedance (Elastic and Dissipative forces) are calculated as:
+\begin{equation}
+    K_i = \left[\begin{array}{cc}
+        0 & 0 \\
+        0 & k_i
+    \end{array}\right],
+    D_i = \left[\begin{array}{cc}
+        \theta_i^2 & 0 \\
+        0 & 1
+    \end{array}\right]
+\end{equation}
+With an actuator torques Jacobian A:
+\begin{equation}
+    A_i(q_i) = \left[\begin{array}{cc}
+        -cos(\phi_i)sin(\theta_i) & -sin(\phi_i) \\
+        -sin(\phi_i)son(\theta_i) & cos(\phi_i)
+    \end{array}\right]
+\end{equation}
+And the full model becomes:
+\begin{equation}
+    B9q)\Ddot{q} + C(q, \Dot{q})\Dot{q} + D(q)\Dot{q}+G_G)(q)+Kq=A(q)\tau_A
+\end{equation}
+
+\emph{There are useful applications of the impedance parameters K and D} for the Dynamic Model using Closed Loop Curvature Controller to account for uncertainties in the PCC model (Slide 25). This inputs desired $\Bar{q}, \Bar{\Dot{q}}$ into K, D  in a feedforward system, where \textbf{K, D can be found using system ID}, which are added to mixed forward feedback to get torque values, and visual feedback is used to calculate output $q, \Dot{q}$, which are fed back into the mixed feedforward-feedback controller. \emph{No tuning is required in this, as model knowledge fills in for all terms.} \textbf{K, D act as a natural PD controller, which is globally and asymptotically stable} as for rigid robots.
+
+\textbf{Impedance control at the end=effector can be used to approach and track surfaces} like an elephant's trunk for blind navigation. This is done by modeling a spring with a coefficient $K_c$ connecting the end-effector to the inside of the surface. A vector is created parallel $n_\parallel$ and perpendicular $n_\perp$ to the surface where the end-effector is making contact, and the spring is placed at a distance $x_d = x_t - \delta \cdot n_\perp$ within the surface. An external force is then calculated as $f_{ext}=K_c(x(t) - x_d)$. An integral action is calculated on $n_\parallel$ to determine the force to use which increase over time to overcome external obstacles like friction. This enables \textbf{surface tracking with a closed loop Cartesian Controller} in 2D (Slide 44).
+
+
+\subsection{Advanced Model-Based Control Techniques}
+
+\textbf{More advanced controls can be achieved by adding proprioception through analytical and dynamical modeling.} The SoPrA continuous arm does this. A PCC model is created in 3D to track kinematics, using 5 elements per curve $R-R-R-P-\mu-P$ (letting another Rotational element be at the beginning of the next segment) to get the pose transform from the base to the tip of each joint. Dynamically, mass is located at the center of the link, with the moment of inertia being calculated treating the segment as a curved cylinder. The Map Jacobian $J_m=\frac{\partial\xi}{\partial q}$ to calculate the rigid link's mass matrix $B_\xi$, Coriolis and Centripetal components $C_\xi$, and the Gravitational forces $g_\xi$. K,D are calculated treating the model as being made of silicone. The pressure input to each chamber is also modeled as some matrix $A$ times the pressure $p$ given the EoM:
+\begin{equation}
+    Ap+J^tf=B(q)\Ddot{q}+C(q,\Dot{q})+g(q)+Kq+D\Dot{q}
+\end{equation}
+The sensors tracking the end-effector position $s$ does not suffice to track the pose $q$ unless it is combined with the model with a static assumption, simplifying the model to 
+\begin{equation}
+    Ap=g(q)+Kq
+\end{equation}
+Which can be solved using a \textbf{Quadratic program} where \emph{$s$ is the sensor reading and $S$ is a matrix mapping q -> s where $S^+s=q$}:
+\begin{equation}
+    \left\{\begin{array}{cc}
+        argmin_q & ||Ap-g(q_0)-Kq||^2 \\
+        subject\:to & s=Sq
+    \end{array}\right.
+\end{equation}
+
+The curvature and tip force can be estimated simultaneously treating $f_0$ as a force offset and $r$ as a fudging factor because of measurement uncertainty:
+\begin{equation}
+    \left\{\begin{array}{cc}
+        argmin_{q,f_{ext}} & ||Ap-g(q_0)+J(q_0)^Tf_{ext}-Kq+f_0||^2 + r||f_{ext}||^2 \\
+        subject\:to & s=Sq
+    \end{array}\right.
+\end{equation}
+
+\textbf{To control the arm for fine end-effector tasks} like drawing, an \textbf{Operational Space Control Law can be used} with a PD controller, where the Augmented Rigid Body Model $\xi$ gives the Mode Dynamics (from the EoM), which combined with the Operational Space Control Law, \emph{which calculated the force required to go from $x_{des}$ with velocity $\Dot{x}_{des}$} (Slide 10) can give the Pneumatic Control Pressures:
+\begin{equation}
+    f=k_p(x_{des}-x)+k_d(\Dot{x}_{des}-\Dot{x})
+\end{equation}
+\begin{equation}
+    p_{xy} = J^Tf + D\Dot{q}+Kq+g+(I-J^TJ^{+T})\tau_{null}
+\end{equation}
+
+\textbf{Uncertainty can be handled} with adaptive sliding-mode control, where an adaptive controller automatically tunes itself to minimize performance error for some modeling accuracy (Slide 13), \emph{greatly improving tracking accuracy.}
+
+A \textbf{Model Predictive Controller} based on the Augmented Rigid Body Model is used to plan tasks forwards in time. This is specified in Slide 20 using \emph{a Tube-MPC formulation with Motion Capture Feedback} and some reference motion to calculate inputs to a valve controller for SoPrA.
+
+\textbf{Learning-Based Control} can be achieved for a robot with unknown dynamics using the \textbf{Depp Stochastic Koopman Operator (DeSKO}. This records nonlinear states and encodes and splits them using a Neural Network, then the \emph{Koopman Matrix with some Control Matrix uses Recursive Propagation to calculate the distribution at the next time-step} of the states, which is mapped back to the original nonlinear state space. This is used by first gathering a training dataset of states, training the DeSKO Model, and using that to create a Controller that takes in states and returns an input to reach the next state \emph{for nonlinear systems} by minimizing some cost/loss function $L$, explained in Slides 21-23.
+
+These control methods \textbf{can be integrated with other robots such as drones using hierarchical controls.} A Nullspace projector is used to first achieve higher-priority tasks, then solve lower priority tasks within the nullspace of the higher priority tasks (and so on). For example, task 1 can be moving the drone to be above a target object, task 2 can be orienting the end-effector, and task 3 is the end-effector position (or another order, maybe 2-3-1 is best).
+
+\subsection{Beyond FEM \& Multiphysics}
+
+There are more simulation methods than FEM (Position-Based Dynamics using point-based simulation, Material Point Method using a grid to define continuum mechanics...) \textbf{Sim2Real is important in every case}, as if it doesn't work on the robot, it doesn't matter. \emph{This can be addressed using} \textbf{Residual Learning}, \textbf{Domain Randomization} (simulating the env many times in parallel with small variations in parameters), or \textbf{Domain Randomization with System Identification} (SysID tracks the difference between sim and real results, creates a distribution, and creates a more robust RL environment). The learned behavior must also be \textbf{Transferable} or generalizable to other similar (but different robots).
+
+\textbf{Multiphysical Systems are used to simulate systems governed by multiple physical phenomena.} These phenomena have different constitutive equations that need to be taken into account for modeling. Common phenomena in multiphysical systems include:
+\begin{equation}
+    \begin{array}{cc}
+        \textbf{Solids:} & \rho(\frac{\partial \Vec{v}}{\partial t} + (\Vec{v}\cdot\nabla)\Vec{v})-f_{ext} - \nabla\cdot\sigma = 0 \\
+        \textbf{Fluids} & \rho(\frac{\partial \Vec{v}}{\partial t} + (\Vec{v}\cdot\nabla)\Vec{v})-f_{ext} - \nabla p - \mu\Delta\Vec{v} \\
+        \textbf{Heat:} & \frac{\partial\Vec{T}}{\partial t} - \alpha\Delta T = 0 \\
+        \textbf{Electromagnetism:} & \left\{\begin{array}{cc}
+            \nabla \cdot\Vec{E} = \frac{\rho_c}{\varepsilon_0} & \nabla \times \Vec{E} = -\frac{\partial\Vec{B}}{\partial t} \\
+            \nabla \cdot \Vec{B} = 0 & \nabla \times \Vec{B} = \mu_0 \Vec{J} + \mu_0\varepsilon_0\frac{\partial\Vec{E}}{\partial t} 
+        \end{array} \right.
+    \end{array}
+\end{equation}
+
+This is useful for modeling rotating magnets (electromagnetism) or soft solids expanded by fluids (fluidic actuators).
+
+\textbf{Optimization} is done by improving robot parameters to improve performance. For example, when designing a beam or a turbine blade, a flat shape can be used and have pixels removed, \emph{using FEA to  calculate the physical reactions to optimize the object shape for cost, weight, etc.} This requires optimizing over an object function over many parameters. This can be done \textbf{more quickly and more easily} \emph{using the $1^{st}$ derivative/gradient to get the optimal direction to maximize/minimize the objective function given current parameters}, visualized in Slide 25. This can be used to find the material parameters (E, $\gamma$) of an object. $\gamma$ is called \textbf{Poisson's Ratio}, which describes how much the cross section shrinks when a material is elongated.
+
+\emph{Any differentiable function is ideal for optimization as the gradient can be used to find the optimal parameters.} \textbf{Neural Networks are differentiable by nature}, and are therefore ideal for this. A class example is using a neural network to design a closed-loop controller to optimize swim speed for a fish shape. The gradient is used to optimize the fish design or controller design.
+
+The \textbf{Pareto Front} is often discussed to find trade-offs. \emph{Pareto Optimality states that optimizing one variable may worsen another}, and the Pareto Front is a line that defines the most optimal trade-offs given how much one wants to optimize one parameter over another (Slide 35).
+
+Another consideration is \emph{simulation speed}. This bottlenecks optimization, as classical solvers are computationally expensive. One solution to this is using Machine Learning with a physics-informed simulation environment to predict the physical reaction of object and an environment. A physics-informed Deep Learning optimizer can be ~290x faster than classical solvers.
+
+\subsection{Continuum Mechanics}
+
+Most robots are not symmetric, so a general solution is using \textbf{FEM} using \textbf{volumetric meshes} to create detailed and accurate simulations of soft robots. The principle behind this idea is \emph{Continuum mechanics, the study of the physics of continuous materials} (Slide 5), and \textbf{elasticity} is particularly relevant for modeling soft mechanisms. More sophisticated models can be made by adding other effects like elecro-elasticity or fluid-structure interactions.
+
+Material properties must be known for continuum mechanics. \emph{A stress-strain curve is one way to represent physical properties.} Following a Linear Elasticity assumption, \textbf{Young's Modulus E} is calculated as the linear component of a stress strain curve before reaching yield strength:
+\begin{equation}
+    \sigma=E\varepsilon
+\end{equation}
+ The \emph{energy density function formally characterizes materials} and is the integral of the Linear component of the stress-strain curve. This is defined by constitutive equations, defined in Slides 12-14 for various types of materials (linear elastic isotropic materials, hyperelastic materials...). These provide a material model, which can be used alongside \textbf{Conservation Equations} of linear/angular momentum and mass  to \emph{calculate Continuum Mechanics}. For example, \textbf{conservation of linear momentum} states that the sum of external and internal forces will be equal to the density times the material derivative of velocity, which can be reformated as $F=ma$ (Slide 19). These equations are listed on Slide 23.
+
+ Continuum mechanics can be solved using numerical approximations using software. There are a few methods (Forward Finite Difference, Central Finite Difference...) that approximate derivatives using sums or \emph{Piecewise linear basis functions}. In \textbf{higher dimensions} these can be approximated using \emph{Linear Triangles}.
+
+ These numerical approximations work by discretizing the model using a mesh and then applying a solver over time steps to calculate physical responses. An object can be CADed, exported to an STL to get the surface mesh, and then exported to a volumetric mesh (VTK) to which physics simulations can be applied. However, complex meshes can still be complex to solve and are \textbf{not real time capable}, and can be further simplified. For example, \emph{for rod-shaped objects (like a soft robot, or hair), the Cosserat Rod Theory can be applied to reduce the number of physics calculations by treating the long joint at many shorter rods}.
+
+ \textbf{Model-Order Reduction} can be used to reduce calculations as well by \emph{linearizing around an equilibrium point around which the approximation can be solved using Proper Orthogonal Decomposition (POD), fed to a State-Observer (Controller) and fed to the plant to get linear state feedback.} The \textbf{Non-Linear system is linearized into a model like such:} (Slide 39)
+ \begin{equation}
+     x=\left(\begin{array}{cc}
+        q \\
+        v 
+     \end{array}\right), \Dot{x}=\left(\begin{array}{cc}
+         0 & I \\
+         -M^{-1}K & -M^{-1}D
+     \end{array}\right) x+\left(\begin{array}{cc}
+        0 \\
+        -M^{-1}H^T 
+     \end{array}\right) u = Ax + Bu
+ \end{equation}
+ Since A and B can be rather large, matrices must be found to project the dyamics to a lower-order reduced state (Slide 40):
+ \begin{equation}
+     \Dot{x}_r=W_r^TAV_rx_r+W_r^TBu+W_r^TAV_{\Bar{r}}x_{\Bar{r}}
+ \end{equation}
+ This reduced order space is computed using \textbf{Proper Orthogonal Decomposition}. The model is \emph{actuated in all possible configurations in the workspace, which is captured and saved as snapshots}. These snapshots are used to determine $V_r$ and $W_r$ using Singular Value Decomposition:
+ \begin{equation}
+     S=U\Sigma V
+ \end{equation}
+ Where $\Sigma$ are eigenvalues and:
+ \begin{equation}
+     T_r=(||U_1, U_2, ..., U_r)||...)
+ \end{equation}
+ Truncated based on the eigenvalues $\Sigma$, giving the final calculation:
+ \begin{equation}
+     V_r = W_r = \left(\begin{array}{cc}
+         T_r & 0 \\
+         0 & T_r
+     \end{array} \right)
+ \end{equation}
+
+This model is then validated by checking the error between the simulated output and the real system output. A \textbf{State Feedback Controller} using low-order state feedback $u=-L\Hat{x}_r$ (where L is Linear Feedback that optimizes the decay rate of the Lyapunov function), proving that stability exists. A State Observer gather $\Hat{x}_r$ and passes it to the Linear Feedback controller (Slide 47), which gives input $u$ to feed back into the Observer and Plant. \emph{This closed-loop method reduces tracking error significantly} (Slide 49).
+
+Generally, \textbf{tracking error can be blamed on linearizing at the straight resting shape of the robot, a change of the robot's properties over time, or because the proof is only valid for pose-to-pose.}
+
+\section{Deep Learning for Soft Robotics}
+
+Machine learning uses a black box approach, feeding large amount of inputs to a network neurons and activation function that learn to predict the output. There are a few methods:
+\begin{itemize}
+    \item Reinforcement Learning: given a state, predict the next action to maximize expected reward.
+    \item Imitation Learning: Provide examples and rewards cloning desired behavior.
+    \item Direct Differentiable Optimization: Get the world model as differentiable variables.
+\end{itemize}
+Learning can be with or without feedback (supervised, semi-supervised, or unsupervised), and Stochasticity within the model can help robustness (whether variables are fixed/deterministic or probabilistically distributed).
+
+\textbf{The Koopman Operator K} is used to mode discrete-time nonlinear systems $x_{t+1}=f(x_t)$, where f() is some nonlinear transformation in a lifted space with observable function $\psi(x_{t+1})$ with higher dimensionality, enabling linearization:
+\begin{equation}
+    \psi(x_{t+1})=\psi(f(x_t))=K\psi(x_t)
+\end{equation}
+For a controlled system with input $u$ defined as $x_{t+1} = f(x_t,u_t)$, the a more general Koopman operator is:
+\begin{equation}
+    \psi(x_{t+1})=K_x\psi_x(x_t)+K_u\psi_u(u_t)
+\end{equation}
+\emph{The Koopman Operator is learned by the following steps:}
+\begin{enumerate}
+    \item Collect a data set $\{x_t, u_t, x_{t+1}\}_{1:N}$
+    \item Select an appropriate set of observables $\psi_1(\cdot), \psi_2(\cdot),...\psi_n(\cdot)$
+    \item Minimize the loss function $\sum||\psi(x_{t+1}-K-x\psi_x(x_t)-K_u\psi_u(u_t)||$, minimizing over $K_x$ and $K_u$.
+\end{enumerate}
+The Koopman operator can be used to predict the future state by obtaining observables $\psi(x_t)$ of the current state and recursively predict future observables, using its inverse $\psi^{-1}(\cdot)$ to reconstruct predicted future states (Slide 7).
+
+This can be combined with a Neural Network with a decoder to increase dimensions and an encoder to map back and reconstruct a state (Slide 9).
+
+\textbf{Reinforcement Learning} rewards agents for taking an action at a state, and derives a policy by maximizing the rewards. \emph{A Discounted Cumulative Reward is used to prevent divergence towards infinity.} There are two important functions, the \textbf{Value Function}, measures expected reward from a state:
+\begin{equation}
+    V^\pi(s):=\mathbb{E}[\sum\gamma^tr(s_t,a_t)|s_0=s,\pi]
+\end{equation}
+and the \textbf{Q Function}, which measures expected future reward for taking a specific action at a state:
+\begin{equation}
+    Q^\pi(s,a):=\mathbb{E}[\sum\gamma^tr(s_t,a_t)|s_o=s,a_0=a,\pi]
+\end{equation}
+\textbf{Model Free Reinforcement Learning} tries to find an optimal policy to greedily maximize Q (Slide 18). \textbf{Model Free Policy Iteration} does this over two steps per iteration:
+\begin{enumerate}
+    \item Model-free prediction: Estimate V, Q
+    \item Policy improvement: update the policy $\pi_{t+1}(s)\leftarrow argmax_{a\in A}Q^{\pi t}(s, a)$
+\end{enumerate}
+Q and V can be estimated through \textbf{Q-Learning with Off-Policy updates}, using observations from offline data collected from a variety of randomized policies to update Q:
+\begin{equation}
+    Q(s_t, a_t) \leftarrow Q(s_t, a_t)+\alpha_t[r_t+\gamma max_aQ(s_{t+1},a)-Q(s_t,a_t)]
+\end{equation}
+\textbf{Deep Q-Learning} combines the Q-function with a neural network, in which the mean squared error is minimized with respect to the true Q function (Slide 20).
+
+\textbf{Actor-Critic Learning} using Q-Learning with an actor model $\pi_\theta(s)$ that parameterizes the policy and is trained concurrently with a Critic $Q_w(s,a)$, where first the Actor is updated  using the policy gradient estimator, then the Critic is updated using Q-Learning (Slide 21).
+
+\emph{There is an entire Zoo of RL techniques that combine Policy gradients, Q-Learning, etc..} See Slide 22.
+
+\textbf{Imitation Learning} tries to copy behavior that is gathered and fed as input data. Expert demonstrations are recorded, their trajectories are modelled, and his is used to train. \emph{Useful when replication is more important than improving policy}.
+
+\subsection{Geometric Deep Learning}
+Most deep learning use a similar environment: world + grid + rules calculating at every time-step. This can make it difficult to model some systems and leads to the curse of dimensionality, where problems explode in complexity as they grow. \emph{Non-rigid structures need to be modeled, and their structure can be exploited in modelling.}
+
+Learning architectures are best when symmetric (RNNs have time-warping symmetry, CNNs have translational symmetry built into their kernels). Soft robotics uses \emph{Permutation or Isometry symmetric architectures for different relevant data-sets}.
+
+\textbf{Point Clouds and Sets need permutation invariant architectures}. Point sets are unordered and the solutions must be invariant to $N!$ permutations (Slide 10 shows why), achieved using a permutation matrix $P$ such that $f(x)=f(PX)$. Therefore, \emph{Permutation Invariant Symmetric Functions are used}, such as the Maximum in a set or the set's sum. This enables \textbf{Order-invariant Point Learning}:
+\begin{equation}
+    f(x_1, x_2, ..., x_n) = \gamma\cdot g(h(x_1), h(x_2),...,h(x_n))
+\end{equation}
+The inputs $x_n$ are fed into a preoperator $h(x)$. This is used to create a set that is fed to $g$, a symmetric function, before passing through a multiplier $\gamma$ to get an output. This is useful for task learning or determining optimal sensor placement.
+
+A \textbf{Point Sparsifying and Feature Extractor (PSFE)} is used to take inputs about the object (strain, strain rates, rest pose...) and outputs latent features (deformation...) as can output as optimal sensor locations. This can be used to generalize using a \emph{Long-Shor Term Memory (LSTM)} network and a predictor encoder for grasp prediction, to reconstruct a dense particle state with proprioception, or with a controller to learn a policy (Slide 15). A \textbf{Sparse Sensor Selection Layer (SSSL)} \emph{learns a set of binary, stochastic weights} from a set of points, uses a Sigmoid activation function, samples probabilities, and passes those into a Bernouli Sampler and into a Point-based feature extractor to \emph{extract sparse features}. Slide 18 specifies how this is used for sensor selection.
+
+Graphs and meshes contain adjacencies between points represented by an adjacency matrix $A$. An arbitrary permutation matrix exists such that $f(X,A) = f(PX, PAP^T)$. Graphs link points, and can be used to learn Model-Based Control (Slide 23).
+
+\textbf{Geodesics} (shortests path on surface between 2 points) and \textbf{Manifolds} (representations of objects in a higher dimension space) are used to create non-rigid representation in soft robotics. \emph{Manifolds present a unique challenge as they are path-dependent but must navigate Non-Euclidian space given possibly Euclidian inputs in a lower dimension.} Manifolds represent the boundary surface of a 3D object in 2D, which is useful for \emph{representing objects that undergo non-rigid deformations.} Geometric convolution are used to learn filers on manifolds (Slide 28). A \textbf{Geodesic CNN} can also be used to learn on Manifolds by defining geodesic patches on a manifold and constructing local polar coordinates on the manifold geodesics. This can be used to synthesize a digital model from real data, recreating 3D models from 2D images using a \textbf{Mesh CNN}.
+
+\subsection{Learned Representations for Robotic Manipulation}
+
+\textbf{DenseObjectNets} are dense pixel-wise object descriptors used as representations for manipulation, \emph{representing an image as a latent space and assigning pixel-wise similarities.} A good world representation is needed to perform closed-loop feedback control for manipulation.
+
+There is a \textbf{Depth vs Breadth trade-off when designing robot manipulation tasks.} Generality can be done at the cost of complexity. \emph{Self-Supervised learning is excellent for achieving generality with a level of task complexity}, as it does not need a huge amount of pre-labeled data. \textbf{Dense Descriptors do this using pixel-wise contrastive loss.} Self-supervision is achieved by using a wrist mounted camera and collecting data from multiple views of one object, with automated 3D reconstruction and change detection to create large amounts of data for each placed object.
+
+Pixel-wise contrastive loss is calculated using a data set with pairs of matching and non-matching points. Loss $\mathcal{L}$ is calculated as the sum of $\mathcal{L}_{match}$ and $\mathcal{L}_{non-match}$, specified in Slide 14. $\mathcal{L}_{non-match}$ can also be scaled by normalizing over the number of hard-negative non-matches (which are closer together than some threshold max distance). This leads to the creation of a \textbf{Dense Descriptor Representation} \emph{for self-supervised class-consistent learned descriptors} for manipulation. It works for any 3D reconstructable object, is sample efficient, and can measure success/failure on training data.
+
+\subsection{Uncertainty Aware Learning}
+
+\textbf{Uncertainty-Aware Learning} is robust in the presence of noise and can integrate confidence in its predictions (not to be confused with probability). Probabilistic outputs are trained to return the most likely output given some input. \emph{Discrete class targets learn discrete classifications using an activation function like softmax}. \emph{Continuous class targets learn via regression creating a Normal distribution} $\mathcal{N}(\mu, \sigma^2)$.
+
+There are 4 types of uncertainties:
+\begin{enumerate}
+    \item Known Knowns: things that are certain
+    \item Known Unknowns: things that we know cannot be predicted
+    \item Unknown Knowns: things that are known by others but not by yourself
+    \item Unknown Unknowns: completely unforseeable events A.K.A. garbage
+\end{enumerate}
+\textbf{Aleatoric Uncertainty} describes the confidence in the input data, which can be high with noisy data, for example, and can be learned (but not reduced with noisy data, just better filters/sensors). \textbf{Epistemic Uncertainty} describes model uncertainty, and confidence of the prediction. \emph{This is difficult to learn, and is often the result of missing training data}, and therefore can be reduced using more training data.
+
+One way to train to determine Epistemic Uncertainty is using a \textbf{Bayesian Neural Network}, where Normal distributions are passed between layers as inputs/outputs rather than deterministic probabilities. These aim to learn a posterior over weights $P(|X,Y)$ (Slide 19). Bayesian deep learning can use \emph{Monte Carlo Dropout} (randomly turn off some neurons) or \emph{Model Ensembles} (many models trained with different weights until converged) to learn $\mathbb{E}(\Hat{Y}|X)=\frac{1}{T}\sum f(X|W_t)$ and $Var(\Hat{Y|X}$.
+
+Unfortunately, these methods are slow, bad for memory (saving many copies of the network in parallel), inefficient, and sensitive to choice of prior and therefore overconfident.
+
+\textbf{Evidential Deep Learning} instead treats learning as an \emph{evidence acquisition process}, where more evidence = increased confidence (Slide 23). This is achieved by sampling from an evidential distribution to get an individual new distribution over the data. The model parameters are used with evidential priors to get a parameter distribution, which is then fed into the learned likelihood function to get a class label (for Classification Problems, discrete and continuous separated in Slide 26).
+
+%%% Angabe der .bib-Datei (ohne Endung) / State .bib file (for BibTeX usage)
+% \bibliography{mybibfile} %\printbibliography if you use biblatex/Biber
+\end{document}

@@ -1,0 +1,177 @@
+# -*- coding: utf-8 -*-
+
+import Sofa
+import SofaRuntime
+
+import math
+import numpy as np
+
+import time
+# import tkinter
+# import matplotlib
+import matplotlib.pyplot as plt
+# matplotlib.use('TkAgg')
+
+import os
+path = os.path.dirname(os.path.abspath(__file__))+'/mesh/'
+
+# Controller for finger
+class MyController(Sofa.Core.Controller):
+        def __init__(self, *args, **kwargs):
+                Sofa.Core.Controller.__init__(self, *args, *kwargs)
+                self.currentTime = 0.0
+                self.scaleFactor = 170.0
+                self.node = args[0]
+                
+                # Define goal node in local scope to simplify access
+                self.goal = self.node.getChild('goal')
+
+                # Plotting
+                self.fig = plt.figure()
+                self.time_x = self.fig.add_subplot(1, 1, 1)
+                self.time = []
+                self.error = []
+
+        # Event listener to move goal at animation time steps
+        def onEvent(self, params):
+                # verify whether the current event is an animation step as those contain time step information
+                if params['type'] == 'AnimateBeginEvent':
+                        # create a copy of the goal position as it cannot be locally overwritten
+                        pos = np.copy(self.goal.goalMO.position.value)
+                        # calculate the new goal position based on sinusoidal trajectory in x and y
+                        pos[0][0] = -78 - 30.0 * np.abs(math.sin((self.currentTime*self.scaleFactor*math.pi)/180))
+                        pos[0][1] = 7 + 30.0 * math.cos((self.currentTime*self.scaleFactor*math.pi)/180)
+                        # assign the new goal position to the goal object 
+                        with self.node.getChild('goal').goalMO.position.writeableArray() as p:
+                                p[0] = pos
+                        
+                        # update the current time using the provided animation time step
+                        self.currentTime += params['dt']
+
+                        # calculate the error
+                        error = np.linalg.norm(self.node.getChild('goal').goalMO.position.value - self.node.getChild('finger').getChild('fingertip').fingertipMO.position.value)
+
+                        # Plotting
+                        self.plot(self.currentTime, error)
+
+        def onSimulationInitDoneEvent(self, params):
+                pass
+                
+        def plot(self, t, e):
+                # Add x and y to lists
+                self.time.append(t)
+                self.error.append(e)
+                print(self.currentTime)
+
+                if self.currentTime > 20 and self.currentTime < 20.01:
+                        # Draw x and y lists
+                        self.time_x.clear()
+                        self.time_x.plot(self.time, self.error)
+
+                        # Format plot
+                        plt.xticks(rotation=45, ha='right')
+                        plt.subplots_adjust(bottom=0.30)
+                        plt.title('Fingertip Tracking Error')
+                        plt.ylabel('Position Error [mm]')
+                        plt.xlabel('Time [s]')
+                        plt.savefig('finger_error.png')
+
+# Create the scene, based on provided finger script in SoftRobots.Inverse
+def createScene(rootNode):
+                rootNode.addObject('RequiredPlugin', pluginName='SoftRobots SoftRobots.Inverse SofaConstraint SofaDeformable SofaEngine SofaImplicitOdeSolver SofaLoader SofaOpenglVisual SofaSimpleFem SofaSparseSolver')
+                rootNode.addObject('VisualStyle', displayFlags='showVisualModels hideBehaviorModels showCollisionModels hideBoundingCollisionModels hideForceFields showInteractionForceFields hideWireframe')
+
+                rootNode.addObject('FreeMotionAnimationLoop') #FreeMotionAnimationLoop DefaultAnimationLoop
+                rootNode.addObject('QPInverseProblemSolver', printLog=False)
+
+                rootNode.gravity = [0, -9180, 0]
+                rootNode.addObject('BackgroundSetting', color=[1,1,1,1])
+                rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight")
+
+                ##########################################
+                # FEM Model                              #
+                ##########################################
+                finger = rootNode.addChild('finger')
+                finger.addObject('EulerImplicitSolver', name='odesolver', firstOrder=True, rayleighMass=0.1, rayleighStiffness=0.1)
+                finger.addObject('SparseLDLSolver', template="CompressedRowSparseMatrixMat3x3d")
+                finger.addObject('MeshVTKLoader', name='loader', filename=path+'finger.vtk')
+                finger.addObject('MeshTopology', src='@loader', name='container')
+                finger.addObject('MechanicalObject', name='tetras', template='Vec3')
+                finger.addObject('UniformMass', totalMass=0.075)
+                finger.addObject('TetrahedronFEMForceField', template='Vec3', name='FEM', method='large', poissonRatio=0.3,  youngModulus=600)
+                finger.addObject('BoxROI', name='ROI1', box='-15 0 0 5 10 15', drawBoxes=True)
+                finger.addObject('RestShapeSpringsForceField', points='@ROI1.indices', stiffness=1e12)
+                finger.addObject('LinearSolverConstraintCorrection')
+
+                ##########################################
+                # Cable                                  #
+                ##########################################
+                cable = finger.addChild('cable')
+                cable.addObject('MechanicalObject',
+                        position=[
+                                [-17.5, 12.5, 2.5],
+                                [-32.5, 12.5, 2.5],
+                                [-47.5, 12.5, 2.5],
+                                [-62.5, 12.5, 2.5],
+                                [-77.5, 12.5, 2.5],
+
+                                [-83.5, 12.5, 4.5],
+                                [-85.5, 12.5, 6.5],
+                                [-85.5, 12.5, 8.5],
+                                [-83.5, 12.5, 10.5],
+
+                                [-77.5, 12.5, 12.5],
+                                [-62.5, 12.5, 12.5],
+                                [-47.5, 12.5, 12.5],
+                                [-32.5, 12.5, 12.5],
+                                [-17.5, 12.5, 12.5]
+                                ])
+
+                # Set a maximum displacement for your cable
+                cable.addObject('CableActuator', name="aCable",
+                        indices=list(range(0,14)),
+                        pullPoint=[0.0, 12.5, 2.5],
+                        maxPositiveDisp=40,
+                        maxDispVariation=0.5,
+                        minForce=0)
+
+                cable.addObject('BarycentricMapping')
+
+                ##########################################
+                # Effector goal for interactive control  #
+                ##########################################
+                goal = rootNode.addChild('goal')
+                goal.addObject('EulerImplicitSolver', firstOrder=True)
+                goal.addObject('CGLinearSolver', iterations=100, tolerance=1e-5, threshold=1e-5)
+                # print(math.cos(((time.time() % 10)*math.pi)/180))
+                goal.addObject('MechanicalObject', name='goalMO',
+                                  position=[-103,  7,  7])
+                goal.addObject('SphereCollisionModel', radius=5)
+                goal.addObject('UncoupledConstraintCorrection')
+
+
+                ##########################################
+                # Effector                               #
+                ##########################################
+                effector = finger.addChild('fingertip')
+                effector.addObject('MechanicalObject', 
+                                    name='fingertipMO',
+                                    position=([-103,  7,  7]))
+                effector.addObject('PositionEffector',
+                                    template='Vec3',
+                                    indices=0,
+                                    effectorGoal="@../../goal/goalMO.position")
+                effector.addObject('BarycentricMapping', mapForces=False, mapMasses=False)
+
+                ##########################################
+                # Closed Loop Controller                #
+                ##########################################
+                rootNode.addObject(MyController(rootNode))
+                
+
+                
+
+                return rootNode
+
+ 
+
